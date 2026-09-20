@@ -1,0 +1,55 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Check AWS') {
+            steps {
+                sh 'aws sts get-caller-identity'
+            }
+        }
+
+        stage('Install AWS Collection') {
+            steps {
+                sh 'ansible-galaxy collection install amazon.aws'
+            }
+        }
+
+        stage('Show Dynamic Inventory') {
+            steps {
+                sh '''
+                ansible-inventory \
+                -i inventory/aws_ec2.yml \
+                --graph
+                '''
+            }
+        }
+
+        stage('Test SSM Connection') {
+            steps {
+                sh '''
+                ansible all \
+                -i inventory/aws_ec2.yml \
+                -m ping
+                '''
+            }
+        }
+
+        stage('Install Applications') {
+            steps {
+                sh '''
+                ansible-playbook \
+                -i inventory/aws_ec2.yml \
+                playbooks/install.yml
+                '''
+            }
+        }
+    }
+}

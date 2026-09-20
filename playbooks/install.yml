@@ -1,0 +1,48 @@
+---
+- name: Install Tomcat
+  hosts: role_tomcat
+  become: true
+
+  tasks:
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install Java
+      ansible.builtin.apt:
+        name: openjdk-17-jdk
+        state: present
+
+    - name: Install Tomcat
+      ansible.builtin.apt:
+        name: tomcat10
+        state: present
+
+    - name: Start Tomcat
+      ansible.builtin.service:
+        name: tomcat10
+        state: started
+        enabled: true
+
+
+- name: Install Apache
+  hosts: role_apache
+  become: true
+
+  tasks:
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install Apache
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+
+    - name: Start Apache
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: true
