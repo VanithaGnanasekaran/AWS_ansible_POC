@@ -1,4 +1,21 @@
 ---
+- name: Install Apache
+  hosts: role_apache
+  become: true
+
+  tasks:
+    - name: Install Apache
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: false
+
+    - name: Start Apache
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: true
+        
 - name: Install Tomcat
   hosts: role_tomcat
   become: true
@@ -24,19 +41,4 @@
         enabled: true
 
 
-- name: Install Apache
-  hosts: role_apache
-  become: true
 
-  tasks:
-    - name: Install Apache
-      ansible.builtin.apt:
-        name: apache2
-        state: present
-        update_cache: false
-
-    - name: Start Apache
-      ansible.builtin.service:
-        name: apache2
-        state: started
-        enabled: true
